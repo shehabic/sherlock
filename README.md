@@ -8,11 +8,12 @@ it's a very simple and straight forward for v.0.1.0 only OKHttp is supported.
 1. add the dependency to your gradle.
 2. on app startup initialize sherlock by ``` NetworkSherlock.getInstance().init(appContext) ```
 3. then attach Sherlock's okhttp intercepter to your OKHttpClient as follows:
-Kotlin
+
+**Kotlin**
 ```kotlin
 val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(SherlockOkHttpInterceptor()).build()
 ```
-Java
+**Java**
 ```java
 OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new SherlockOkHttpInterceptor()).build()
 ```
