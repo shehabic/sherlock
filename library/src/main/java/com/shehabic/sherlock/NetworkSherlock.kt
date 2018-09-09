@@ -87,7 +87,6 @@ class NetworkSherlock private constructor(private val config: Config) {
         return !activity!!::class.java.canonicalName.contains(BuildConfig.APPLICATION_ID)
     }
 
-
     fun init(context: Context) {
         if (appContext != null) return
         appContext = context.applicationContext
