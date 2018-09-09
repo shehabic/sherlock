@@ -8,7 +8,7 @@ import android.content.Context
 
 @Database(entities = arrayOf(NetworkRequests::class, Sessions::class), version = 1, exportSchema = false)
 abstract class Db : RoomDatabase() {
-    abstract fun networkRequestsDao(): DaoAccess
+    abstract fun dao(): DaoAccess
 
     companion object {
         private var INSTANCE: Db? = null
@@ -29,4 +29,8 @@ abstract class Db : RoomDatabase() {
         }
     }
 
+    @FunctionalInterface
+    open interface ResultsCallback<T> {
+        fun onResults(results: T?)
+    }
 }

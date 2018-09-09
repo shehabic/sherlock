@@ -4,6 +4,7 @@ import com.shehabic.sherlock.NetworkSherlock
 import com.shehabic.sherlock.db.NetworkRequests
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.io.IOException
 
 class SherlockOkHttpInterceptor: Interceptor {
     override fun intercept(chain: Interceptor.Chain?): Response {
@@ -14,16 +15,23 @@ class SherlockOkHttpInterceptor: Interceptor {
         request.requestHeaders = srcRequest.headers().toString()
         request.requestBody = srcRequest.body().toString()
         NetworkSherlock.getInstance().startRequest()
-        val response = chain.proceed(srcRequest)
+        try {
+            val response = chain.proceed(srcRequest)
+            request.responseBody = response.body()?.string()
+            request.statusCode = response.code()
+            request.responseHeaders = response.headers().toString()
+            request.responseLength = response.body()?.contentLength() ?: 0L
+            request.requestStartTime = response.sentRequestAtMillis()
+            request.responseTime = response.receivedResponseAtMillis() - request.requestStartTime
+            NetworkSherlock.getInstance().addRequest(request)
+            NetworkSherlock.getInstance().endRequest()
 
-        request.responseBody = response.body()?.string()
-        request.statusCode = response.code()
-        request.responseHeaders = response.headers().toString()
-        request.responseLength = response.body()?.contentLength() ?: 0L
-        request.requestStartTime = response.sentRequestAtMillis()
-        request.responseTime = response.receivedResponseAtMillis() - request.requestStartTime
-        NetworkSherlock.getInstance().addRequest(request)
-        NetworkSherlock.getInstance().endRequest()
-        return response
+            return response
+        } catch (e: IOException) {
+            request.responseError = e.message
+            NetworkSherlock.getInstance().addRequest(request)
+            NetworkSherlock.getInstance().endRequest()
+            throw e
+        }
     }
 }

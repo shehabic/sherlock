@@ -20,5 +20,6 @@ data class NetworkRequests(
     @ColumnInfo(name = "response_headers") var responseHeaders: String? = null,
     @ColumnInfo(name = "response_body") var responseBody: String? = null,
     @ColumnInfo(name = "response_length") var responseLength: Long = 0,
-    @ColumnInfo(name = "response_time") var responseTime: Long = 0
+    @ColumnInfo(name = "response_time") var responseTime: Long = 0,
+    @ColumnInfo(name = "response_error") var responseError: String? = null
 )

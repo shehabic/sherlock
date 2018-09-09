@@ -8,6 +8,7 @@ import android.arch.persistence.room.PrimaryKey
 @Entity
 data class Sessions(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "session_id") var sessionId: Int,
+    @ColumnInfo(name = "session_id") var sessionId: Int? = null,
+    @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "started_at") var startedAt: Long
 )

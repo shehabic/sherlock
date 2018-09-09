@@ -14,7 +14,7 @@ android {
     }
     compileSdkVersion 27
     defaultConfig {
-        applicationId 'com.shehabic.sherlock'
+        applicationId 'com.shehabic.testsherlock'
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1

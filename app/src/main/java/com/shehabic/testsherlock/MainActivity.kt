@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import com.shehabic.sherlock.NetworkSherlock
-import com.shehabic.sherlock.R
 import com.shehabic.sherlock.interceptors.SherlockOkHttpInterceptor
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.OkHttpClient

@@ -1,9 +1,6 @@
 package com.shehabic.sherlock.db
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 
 @Dao
 interface DaoAccess {
@@ -23,16 +20,19 @@ interface DaoAccess {
     fun getAllRequestsForSession(sessionId: Int): List<NetworkRequests>
 
     @Insert
-    fun insertSession(session: Sessions)
+    fun insertSession(session: Sessions): Long
 
     @Query("SELECT * FROM Sessions WHERE session_id = :sessionId")
     fun fetchSession(sessionId: Int): Sessions
 
-    @Query("SELECT * FROM Sessions ORDER BY started_at ASC")
+    @Query("SELECT * FROM Sessions ORDER BY started_at DESC")
     fun getAllSessions(): List<Sessions>
 
     @Delete
     fun deleteSession(session: Sessions)
+
+    @Query("DELETE FROM sessions WHERE session_id = :sessionId")
+    fun deleteSessionById(sessionId: Int)
 
     @Query("DELETE FROM Sessions")
     fun deleteAllSessions()
@@ -42,4 +42,13 @@ interface DaoAccess {
 
     @Query("Delete FROM NetworkRequests WHERE session_id = :sessionId")
     fun deleteAllCurrentSessionRequests(sessionId: Int)
+
+    @Query("SELECT * FROM sessions ORDER BY started_at DESC LIMIT 1")
+    fun getMostRecentSession() : Sessions?
+
+    @Query("SELECT * FROM networkrequests ORDER BY session_id DESC LIMIT 1")
+    fun getRequestsWithTheMostRecentSession() : NetworkRequests?
+
+    @Update
+    fun updateSession(session: Sessions)
 }

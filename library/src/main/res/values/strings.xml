@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">library</string>
-    <string name="title_netrequest_list">NetRequests</string>
+    <string name="title_netrequest_list">View Request List</string>
     <string name="title_netrequest_detail">NetRequest Detail</string>
+    <string name="sherlock_rename_session">Rename session</string>
+    <string name="sherlock_delete_session">Delete session</string>
+    <string name="sherlock_delete_all">Delete all sessions</string>
+    <string name="sherlock_delete">DELETE</string>
+    <string name="delete_current_session">Delete current session?</string>
+    <string name="sherlock_cancel">CANCEL</string>
+    <string name="sherlock_session_name">Session name</string>
+    <string name="sherlock_rename">RENAME</string>
 </resources>
