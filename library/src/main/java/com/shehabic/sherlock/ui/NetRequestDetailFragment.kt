@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.shehabic.sherlock.R
-import com.shehabic.sherlock.ui.dummy.DummyContent
+import com.shehabic.sherlock.ui.dummy.NetworkRequestsList
 import kotlinx.android.synthetic.main.activity_netrequest_detail.*
 import kotlinx.android.synthetic.main.netrequest_detail.view.*
 
@@ -21,17 +21,17 @@ class NetRequestDetailFragment : Fragment() {
     /**
      * The dummy content this fragment is presenting.
      */
-    private var item: DummyContent.DummyItem? = null
+    private var item: NetworkRequestsList.NetworkRequestItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val items = NetworkRequestsList()
         arguments?.let {
             if (it.containsKey(ARG_ITEM_ID)) {
                 // Load the dummy content specified by the fragment
                 // arguments. In a real-world scenario, use a Loader
                 // to load content from a content provider.
-                item = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
+                item = NetworkRequestsList.ITEM_MAP[it.getString(ARG_ITEM_ID)]
                 activity?.toolbar_layout?.title = item?.content
             }
         }

@@ -11,6 +11,10 @@ import com.shehabic.sherlock.db.NetworkRequests
 import com.shehabic.sherlock.db.Sessions
 import com.shehabic.sherlock.ui.NetworkSherlockAnchor
 
+interface SherlockOnSuccessListener<T> {
+    fun onSuccess(requests: T)
+}
+
 class NetworkSherlock private constructor(private val config: Config) {
 
     companion object {
@@ -18,7 +22,7 @@ class NetworkSherlock private constructor(private val config: Config) {
         private var INSTANCE: NetworkSherlock? = null
 
         fun getInstance(): NetworkSherlock {
-            return getInstance(Config())
+            return INSTANCE ?: getInstance(Config())
         }
 
         fun getInstance(config: Config): NetworkSherlock {
@@ -139,11 +143,22 @@ class NetworkSherlock private constructor(private val config: Config) {
         getDb().networkRequestsDao().insertRequest(request)
     }
 
-    fun getCurrentRequests(): List<NetworkRequests> {
+    fun getCurrentRequests(listener: SherlockOnSuccessListener<List<NetworkRequests>>) {
         validateInitialization()
         initSessionIfNeeded()
-        return getDb().networkRequestsDao().getAllRequestsForSession(sessionId!!)
+        dbWorkerThread?.postTask(Runnable {
+            listener.onSuccess(getDb().networkRequestsDao().getAllRequestsForSession(sessionId!!))
+        })
     }
+
+    fun getCurrentRequestsSync(): List<NetworkRequests> {
+        validateInitialization()
+        initSessionIfNeeded()
+        val items = getDb().networkRequestsDao().getAllRequestsForSession(sessionId!!)
+
+        return items
+    }
+
 
     fun clearAll() {
         getDb().networkRequestsDao().getAllRequests()

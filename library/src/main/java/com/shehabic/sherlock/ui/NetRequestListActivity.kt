@@ -2,6 +2,8 @@ package com.shehabic.sherlock.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -9,32 +11,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.shehabic.sherlock.NetworkSherlock
 import com.shehabic.sherlock.R
-import com.shehabic.sherlock.ui.dummy.DummyContent
+import com.shehabic.sherlock.ui.dummy.NetworkRequestsList
 import kotlinx.android.synthetic.main.activity_netrequest_list.*
 import kotlinx.android.synthetic.main.netrequest_list.*
 import kotlinx.android.synthetic.main.netrequest_list_content.view.*
 
-/**
- * An activity representing a list of Pings. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a [NetRequestDetailActivity] representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
 class NetRequestListActivity : AppCompatActivity() {
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
     private var twoPane: Boolean = false
+
+    class BGWorkerThread(threadName: String) : HandlerThread(threadName) {
+
+        private lateinit var mWorkerHandler: Handler
+
+        override fun onLooperPrepared() {
+            super.onLooperPrepared()
+            mWorkerHandler = Handler(looper)
+        }
+
+        fun postTask(task: Runnable) {
+            mWorkerHandler.post(task)
+        }
+
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_netrequest_list)
-
+        worker = BGWorkerThread("bgWorkerThread")
+        worker?.start()
         setSupportActionBar(toolbar)
         toolbar.title = title
 
@@ -44,30 +52,43 @@ class NetRequestListActivity : AppCompatActivity() {
         }
 
         if (netrequest_detail_container != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             twoPane = true
         }
 
         setupRecyclerView(netrequest_list)
     }
 
+    private var worker: BGWorkerThread? = null
+
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
+        val lists = NetworkRequestsList()
+        val runnable = Runnable {
+            for (request in NetworkSherlock.getInstance().getCurrentRequestsSync()) {
+                lists.addItem(request)
+            }
+            recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, NetworkRequestsList.ITEMS, twoPane)
+        }
+        worker?.postTask(runnable)
     }
 
-    class SimpleItemRecyclerViewAdapter(private val parentActivity: NetRequestListActivity,
-                                        private val values: List<DummyContent.DummyItem>,
-                                        private val twoPane: Boolean) :
+    override fun onDestroy() {
+        worker?.quit()
+        super.onDestroy()
+    }
+
+
+    class SimpleItemRecyclerViewAdapter(
+        private val parentActivity: NetRequestListActivity,
+        private val values: List<NetworkRequestsList.NetworkRequestItem>,
+        private val twoPane: Boolean
+    ) :
         RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
 
         private val onClickListener: View.OnClickListener
 
         init {
             onClickListener = View.OnClickListener { v ->
-                val item = v.tag as DummyContent.DummyItem
+                val item = v.tag as NetworkRequestsList.NetworkRequestItem
                 if (twoPane) {
                     val fragment = NetRequestDetailFragment().apply {
                         arguments = Bundle().apply {
