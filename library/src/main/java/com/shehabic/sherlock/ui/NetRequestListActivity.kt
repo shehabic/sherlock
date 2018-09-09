@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.shehabic.sherlock.NetworkSherlock
 import com.shehabic.sherlock.R
-import com.shehabic.sherlock.ui.dummy.NetworkRequestsList
+import com.shehabic.sherlock.ui.data.NetworkRequestsList
 import kotlinx.android.synthetic.main.activity_netrequest_list.*
 import kotlinx.android.synthetic.main.netrequest_list.*
 import kotlinx.android.synthetic.main.netrequest_list_content.view.*
@@ -23,20 +23,15 @@ class NetRequestListActivity : AppCompatActivity() {
     private var twoPane: Boolean = false
 
     class BGWorkerThread(threadName: String) : HandlerThread(threadName) {
-
         private lateinit var mWorkerHandler: Handler
-
         override fun onLooperPrepared() {
             super.onLooperPrepared()
             mWorkerHandler = Handler(looper)
         }
-
         fun postTask(task: Runnable) {
             mWorkerHandler.post(task)
         }
-
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +40,6 @@ class NetRequestListActivity : AppCompatActivity() {
         worker?.start()
         setSupportActionBar(toolbar)
         toolbar.title = title
-
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
@@ -66,7 +60,9 @@ class NetRequestListActivity : AppCompatActivity() {
             for (request in NetworkSherlock.getInstance().getCurrentRequestsSync()) {
                 lists.addItem(request)
             }
-            recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, NetworkRequestsList.ITEMS, twoPane)
+            runOnUiThread {
+                recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, NetworkRequestsList.ITEMS, twoPane)
+            }
         }
         worker?.postTask(runnable)
     }

@@ -39,6 +39,7 @@ class NetworkSherlock private constructor(private val config: Config) {
     private var appContext: Context? = null
     private var sessionId: Int? = null
     private var dbWorkerThread: DbWorkerThread? = null
+    private val activityCycleCallbacks = NetworkSherlock.NetworkSherlockLifecycleHandler()
 
     data class Config(
         val showAnchor: Boolean = true,
@@ -71,18 +72,18 @@ class NetworkSherlock private constructor(private val config: Config) {
     }
 
     fun onActivityResumed(activity: Activity?) {
-        if (config.showAnchor && notLibScreen(activity)) {
+        if (config.showAnchor && isNonLibScreen(activity)) {
             uiAnchor.addUI(activity)
         }
     }
 
     fun onActivityPaused(activity: Activity?) {
-        if (config.showAnchor && notLibScreen(activity)) {
+        if (config.showAnchor && isNonLibScreen(activity)) {
             uiAnchor.removeUI(activity)
         }
     }
 
-    fun notLibScreen(activity: Activity?): Boolean {
+    private fun isNonLibScreen(activity: Activity?): Boolean {
         return !activity!!::class.java.canonicalName.contains(BuildConfig.APPLICATION_ID)
     }
 
@@ -90,12 +91,13 @@ class NetworkSherlock private constructor(private val config: Config) {
     fun init(context: Context) {
         if (appContext != null) return
         appContext = context.applicationContext
+        (context.applicationContext as Application).registerActivityLifecycleCallbacks(
+            activityCycleCallbacks
+        )
         dbWorkerThread = DbWorkerThread("dbWorkerThread")
         dbWorkerThread?.start()
+        dbWorkerThread?.prepareHandler()
         startNewSession()
-        (context.applicationContext as Application).registerActivityLifecycleCallbacks(
-            NetworkSherlock.NetworkSherlockLifecycleHandler()
-        )
     }
 
     private fun getDb(): Db {
@@ -112,9 +114,8 @@ class NetworkSherlock private constructor(private val config: Config) {
     fun startNewSession() {
         validateInitialization()
         dbWorkerThread?.postTask(Runnable {
-            val session = Sessions(0, System.currentTimeMillis())
-            getDb().networkRequestsDao().insertSession(session)
-            sessionId = session.sessionId
+            val session = Sessions(startedAt = System.currentTimeMillis())
+            sessionId = getDb().networkRequestsDao().insertSession(session).toInt()
         })
     }
 
@@ -145,7 +146,6 @@ class NetworkSherlock private constructor(private val config: Config) {
 
     fun getCurrentRequests(listener: SherlockOnSuccessListener<List<NetworkRequests>>) {
         validateInitialization()
-        initSessionIfNeeded()
         dbWorkerThread?.postTask(Runnable {
             listener.onSuccess(getDb().networkRequestsDao().getAllRequestsForSession(sessionId!!))
         })
@@ -153,12 +153,10 @@ class NetworkSherlock private constructor(private val config: Config) {
 
     fun getCurrentRequestsSync(): List<NetworkRequests> {
         validateInitialization()
-        initSessionIfNeeded()
         val items = getDb().networkRequestsDao().getAllRequestsForSession(sessionId!!)
 
         return items
     }
-
 
     fun clearAll() {
         getDb().networkRequestsDao().getAllRequests()
@@ -166,7 +164,6 @@ class NetworkSherlock private constructor(private val config: Config) {
     }
 
     fun getSessionId(): Int {
-        initSessionIfNeeded()
         return sessionId ?: 0
     }
 
@@ -176,5 +173,15 @@ class NetworkSherlock private constructor(private val config: Config) {
 
     fun resumeRecording() {
         captureRequests = true
+    }
+
+    fun isRecording(): Boolean {
+        return captureRequests
+    }
+
+    fun destroy() {
+        validateInitialization()
+        (appContext as Application).unregisterActivityLifecycleCallbacks(activityCycleCallbacks)
+        appContext = null
     }
 }

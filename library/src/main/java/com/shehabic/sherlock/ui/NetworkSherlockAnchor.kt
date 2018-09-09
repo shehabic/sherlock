@@ -1,5 +1,6 @@
 package com.shehabic.sherlock.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -19,11 +20,12 @@ import com.shehabic.sherlock.R
 class NetworkSherlockAnchor {
     private var lastX = -1.0f
     private var lastY = -1.0f
-    var busyCount: Int = 0
-    val anchors: MutableMap<String, View> = HashMap()
-    var currentAnchor: AppCompatImageView? = null
+    private var busyCount: Int = 0
+    private val anchors: MutableMap<String, View> = HashMap()
+    private var currentAnchor: AppCompatImageView? = null
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         private var INSTANCE: NetworkSherlockAnchor? = null
 
         fun getInstance(): NetworkSherlockAnchor {
@@ -50,25 +52,26 @@ class NetworkSherlockAnchor {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     fun addUI(activity: Activity?) {
         val viewGroup = activity?.getWindow()?.decorView as? ViewGroup
-        val display = activity?.getWindowManager()?.defaultDisplay!!
+        val display = activity?.windowManager?.defaultDisplay!!
         val buttonSize = Math.min(display.width, display.height) / 8
         val view = AppCompatImageView(activity)
 
 
         view.alpha = 0.7f
         view.setImageResource(R.drawable.ic_wifi)
-        view.setOnClickListener { view ->
-            view.context.startActivity(Intent(view.context, NetRequestListActivity::class.java))
+        view.setOnClickListener { v ->
+            v.context.startActivity(Intent(v.context, NetRequestListActivity::class.java))
         }
-        var layoutParams: FrameLayout.LayoutParams?
+        val layoutParams: FrameLayout.LayoutParams?
         if (lastX != -1f || lastY != -1f) {
             layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize, Gravity.NO_GRAVITY or Gravity.NO_GRAVITY)
             view.x = lastX
             view.y = lastY
         } else {
-            layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize, Gravity.RIGHT or Gravity.TOP)
+            layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize, Gravity.END or Gravity.TOP)
             layoutParams.rightMargin = 0
             layoutParams.topMargin = buttonSize / 2
         }

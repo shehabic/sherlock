@@ -23,7 +23,7 @@ interface DaoAccess {
     fun getAllRequestsForSession(sessionId: Int): List<NetworkRequests>
 
     @Insert
-    fun insertSession(session: Sessions)
+    fun insertSession(session: Sessions): Long
 
     @Query("SELECT * FROM Sessions WHERE session_id = :sessionId")
     fun fetchSession(sessionId: Int): Sessions
