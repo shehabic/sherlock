@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.shehabic.sherlock">
+
+    <application>
+        <activity
+            android:name=".ui.NetRequestListActivity"
+            android:label="@string/title_netrequest_list"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ui.NetRequestDetailActivity"
+            android:label="@string/title_netrequest_detail"
+            android:parentActivityName=".ui.NetRequestListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.shehabic.sherlock.ui.NetRequestListActivity" />
+        </activity>
+    </application>
+
+</manifest>

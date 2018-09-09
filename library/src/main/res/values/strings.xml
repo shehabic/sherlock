@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">library</string>
+    <string name="title_netrequest_list">NetRequests</string>
+    <string name="title_netrequest_detail">NetRequest Detail</string>
+</resources>
