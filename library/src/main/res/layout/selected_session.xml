@@ -7,7 +7,7 @@
     <TextView
         android:textColor="#FFF"
         android:padding="8dp"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:id="@+id/session_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
