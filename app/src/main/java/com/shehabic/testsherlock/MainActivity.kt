@@ -1,8 +1,10 @@
 package com.shehabic.testsherlock
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import com.shehabic.sherlock.NetworkSherlock
 import com.shehabic.sherlock.interceptors.SherlockOkHttpInterceptor
 import kotlinx.android.synthetic.main.activity_main.*
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ShowToast")
     private fun networkCall() {
         val client: OkHttpClient = OkHttpClient
             .Builder()
@@ -34,6 +37,12 @@ class MainActivity : AppCompatActivity() {
         // Create request for remote resource.
         val request = Request.Builder().url(endPoint).build()
 
-        client.newCall(request).execute()
+        try {
+            client.newCall(request).execute()
+        } catch (e: Exception) {
+            runOnUiThread{
+                Toast.makeText(this, e.message, Toast.LENGTH_LONG)
+            }
+        }
     }
 }
