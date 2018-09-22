@@ -1,6 +1,7 @@
 package com.shehabic.sherlock.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Html
@@ -47,11 +48,11 @@ class NetRequestDetailFragment : Fragment() {
     }
 
     fun share() {
-        val intent = Intent(Intent.ACTION_SEND)
+        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"))
         intent.type = "text/html"
         intent.putExtra(Intent.EXTRA_SUBJECT, "Emailing request/response")
-        intent.putExtra(Intent.EXTRA_HTML_TEXT, item?.getDetails())
-        intent.putExtra(Intent.EXTRA_TEXT, item?.getDetails())
+        intent.putExtra(Intent.EXTRA_HTML_TEXT, Html.fromHtml(item?.getDetails()))
+        intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(item?.getDetails()))
         startActivity(Intent.createChooser(intent, "Share via Email"))
     }
 }
