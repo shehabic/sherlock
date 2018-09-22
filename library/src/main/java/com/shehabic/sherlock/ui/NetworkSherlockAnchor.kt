@@ -65,7 +65,7 @@ class NetworkSherlockAnchor {
 
 
         view.alpha = 0.7f
-        view.setImageResource(R.drawable.ic_wifi)
+        view.setImageResource(R.drawable.ic_sherlock_wifi)
         view.setOnClickListener { v ->
             v.context.startActivity(Intent(v.context, NetRequestListActivity::class.java))
         }

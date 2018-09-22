@@ -2,6 +2,8 @@ package com.shehabic.sherlock.ui
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.Html
+import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +21,7 @@ class NetRequestDetailFragment : Fragment() {
         arguments?.let {
             if (it.containsKey(ARG_ITEM_ID)) {
                 item = NetworkRequestsList.ITEM_MAP[it.getString(ARG_ITEM_ID)]
-                activity?.toolbar_layout?.title = item?.content
+                activity?.toolbar_layout?.title = item?.url
             }
         }
     }
@@ -30,7 +32,10 @@ class NetRequestDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.netrequest_detail, container, false)
-        item?.let { rootView.netrequest_detail.text = it.details }
+        item?.let {
+            rootView.netrequest_detail.text = SpannableString(Html.fromHtml(it.getDetails()))
+            it.getDetails()
+        }
 
         return rootView
     }

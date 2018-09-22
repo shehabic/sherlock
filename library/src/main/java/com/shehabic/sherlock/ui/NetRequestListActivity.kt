@@ -2,30 +2,32 @@ package com.shehabic.sherlock.ui
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
-import android.view.*
-import android.widget.Spinner
-import android.widget.TextView
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
 import com.shehabic.sherlock.NetworkSherlock
 import com.shehabic.sherlock.R
 import com.shehabic.sherlock.db.Db
+import com.shehabic.sherlock.db.NetworkRequests
 import com.shehabic.sherlock.db.Sessions
+import com.shehabic.sherlock.toSimpleString
 import com.shehabic.sherlock.ui.data.NetworkRequestsList
 import kotlinx.android.synthetic.main.activity_netrequest_list.*
 import kotlinx.android.synthetic.main.netrequest_list.*
 import kotlinx.android.synthetic.main.netrequest_list_content.view.*
 import java.lang.ref.WeakReference
-import android.widget.EditText
-import android.view.LayoutInflater
-import android.widget.AdapterView
-import com.shehabic.sherlock.db.NetworkRequests
+import java.util.*
 
 
 class NetRequestListActivity : AppCompatActivity() {
@@ -224,11 +226,22 @@ class NetRequestListActivity : AppCompatActivity() {
             return ViewHolder(view)
         }
 
+        private fun getErrorDrawable(ctx: Context) = AppCompatResources.getDrawable(ctx, R.drawable.ic_sherlock_error)
+        private fun getSuccessDrawable(ctx: Context) = AppCompatResources.getDrawable(ctx, R.drawable.ic_sherlock_success)
+
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
-            holder.idView.text = item.id
-            holder.contentView.text = item.content
+            val ctx = holder.statusImage.context
+            holder.statusImage.setImageDrawable(
+                if (item.isSuccess) { getSuccessDrawable(ctx) } else { getErrorDrawable(ctx) }
+            )
+            holder.statusCode.text = item.statusCode
 
+            holder.requestUrl.text = item.url
+            holder.method.text = item.networkRequest.method
+            val dt = Date()
+            dt.time = item.networkRequest.requestStartTime
+            holder.time.text = dt.toSimpleString()
             with(holder.itemView) {
                 tag = item
                 setOnClickListener(onClickListener)
@@ -238,8 +251,11 @@ class NetRequestListActivity : AppCompatActivity() {
         override fun getItemCount() = values.size
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val idView: TextView = view.id_text
-            val contentView: TextView = view.content
+            val statusCode: TextView = view.status_code
+            val statusImage: ImageView = view.request_status
+            val requestUrl: TextView = view.request_url
+            val method: TextView = view.method
+            val time: TextView = view.time
         }
     }
 

@@ -4,7 +4,7 @@
 
     <application>
         <activity
-            android:icon="@drawable/ic_wifi"
+            android:icon="@drawable/ic_sherlock_wifi"
             android:name=".ui.NetRequestListActivity"
             android:label="@string/title_netrequest_list"
             android:theme="@style/AppTheme.NoActionBar"
