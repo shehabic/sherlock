@@ -82,7 +82,7 @@ class NetworkSherlock private constructor(private val config: Config) {
             if (sessionId != null
                 && it.intent.action == Intent.ACTION_MAIN
                 && it::class.java.canonicalName.startsWith("com.shehabic.sherlock")) {
-                // delete session if it's not empty
+                // delete session if it's empty
                 resetSessionToLastOneWithRequests()
             }
         }
@@ -93,7 +93,11 @@ class NetworkSherlock private constructor(private val config: Config) {
         dbWorkerThread?.postTask(Runnable {
             val lastNonEmptySession = getDb().dao().getRequestsWithTheMostRecentSession()
             lastNonEmptySession?.let {
-                sessionId?.let { sId -> getDb().dao().deleteSessionById(sId) }
+                sessionId?.let { sId ->
+                    if (sId != it.sessionId) {
+                        getDb().dao().deleteSessionById(sId)
+                    }
+                }
                 sessionId = it.sessionId
             }
             busyCreatingSession = false
