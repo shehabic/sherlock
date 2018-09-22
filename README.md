@@ -4,7 +4,7 @@ Sherlock is a shorthand for "Network Sherlock Holmes" a simple lib that you can 
 ## Why not use a proxy?
 - Sherlock is not to replace your normal proxy like. Charles Proxy for example, however the right question would be .. how many times did something go wrong while QAing your app then you realized that it's too late as you were not proxying?
 ## How to use it?
-it's a very simple and straight forward for v.0.1.0 only OKHttp is supported.
+it's a very simple and straight forward for v.0.X only OKHttp is supported.
 1. Add the dependency to your gradle.
 ```groovy
 allprojects {
