@@ -31,26 +31,10 @@ import com.shehabic.sherlock.db.NetworkRequests
 class NetRequestListActivity : AppCompatActivity() {
 
     private var twoPane: Boolean = false
-    private var worker: BGWorkerThread? = null
-
-    class BGWorkerThread(threadName: String) : HandlerThread(threadName) {
-        private lateinit var mWorkerHandler: Handler
-        override fun onLooperPrepared() {
-            super.onLooperPrepared()
-            mWorkerHandler = Handler(looper)
-        }
-
-        fun postTask(task: Runnable) {
-            mWorkerHandler.post(task)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NetworkSherlock.getInstance().initWithReusingMostRecentSession(this)
         setContentView(R.layout.activity_netrequest_list)
-        worker = BGWorkerThread("bgWorkerThread")
-        worker?.start()
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false);
         fab.setOnClickListener { view ->
@@ -61,7 +45,17 @@ class NetRequestListActivity : AppCompatActivity() {
         if (netrequest_detail_container != null) {
             twoPane = true
         }
+        handleStartup()
+    }
+
+    private fun handleStartup() {
+        NetworkSherlock.getInstance().initWithReusingMostRecentSession(this)
         setupUI()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleStartup()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -152,7 +146,6 @@ class NetRequestListActivity : AppCompatActivity() {
                 override fun onResults(results: List<Sessions>?) {
                     weakActivity.get()?.let { activity ->
                         runOnUiThread {
-
                             session_list?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
                                 override fun onNothingSelected(parent: AdapterView<*>?) {
                                     netrequest_list.adapter = null
@@ -252,9 +245,8 @@ class NetRequestListActivity : AppCompatActivity() {
 
     private fun isLauncherForNetworkRequestList(): Boolean = intent?.action == Intent.ACTION_MAIN
 
-    override fun onStop() {
-        super.onStop()
-        worker?.quit()
+    override fun onDestroy() {
+        super.onDestroy()
         if (isLauncherForNetworkRequestList()) {
             NetworkSherlock.getInstance().destroy()
         }

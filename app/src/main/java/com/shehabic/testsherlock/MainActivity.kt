@@ -1,6 +1,7 @@
 package com.shehabic.testsherlock
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
@@ -13,7 +14,6 @@ import okhttp3.Request
 
 class MainActivity : AppCompatActivity() {
 
-    var handler = Handler()
     val endPoint = "https://api.github.com/users/shehabic"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +25,10 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             Thread(Runnable { networkCall() }).start()
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
     }
 
     @SuppressLint("ShowToast")

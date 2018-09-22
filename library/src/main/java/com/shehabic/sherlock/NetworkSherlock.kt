@@ -90,14 +90,14 @@ class NetworkSherlock private constructor(private val config: Config) {
 
     private fun resetSessionToLastOneWithRequests() {
         busyCreatingSession = true
-        dbWorkerThread?.run {
+        dbWorkerThread?.postTask(Runnable {
             val lastNonEmptySession = getDb().dao().getRequestsWithTheMostRecentSession()
             lastNonEmptySession?.let {
                 sessionId?.let { sId -> getDb().dao().deleteSessionById(sId) }
                 sessionId = it.sessionId
             }
             busyCreatingSession = false
-        }
+        })
     }
 
     fun onActivityResumed(activity: Activity?) {
