@@ -48,10 +48,10 @@ class NetRequestDetailFragment : Fragment() {
     }
 
     fun share() {
-        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"))
+        val intent = Intent(Intent.ACTION_SEND, Uri.parse("mailto:"))
         intent.type = "text/html"
         intent.putExtra(Intent.EXTRA_SUBJECT, "Emailing request/response")
-        intent.putExtra(Intent.EXTRA_HTML_TEXT, Html.fromHtml(item?.getDetails()))
+//        intent.putExtra(Intent.EXTRA_HTML_TEXT, Html.fromHtml(item?.getDetails()))
         intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(item?.getDetails()))
         startActivity(Intent.createChooser(intent, "Share via Email"))
     }

@@ -38,12 +38,12 @@ class NetworkRequestsList {
             val headers = networkRequest.requestHeaders?.replace("\n", "<br>", true) ?: ""
             val responseHeaders = networkRequest.responseHeaders?.replace("\n", "<br>", true) ?: ""
             builder
-                .append("<b>------- Request --------</b><br>")
+                .append("<b><h3><font color=blue>Request</font></h3></b><br>")
                 .append("<b>Method</b> ${networkRequest.method}<br>")
                 .append("<b>Headers</b><br>$headers<br>")
                 .append("<b>URL</b> ${networkRequest.requestUrl}<br>")
                 .append("<b>BODY</b> <br>${networkRequest.requestBody}<br>")
-                .append("<b>------- Response --------</b><br>")
+                .append("<b><h3><font color=blue>Response</font></h3></b><br>")
                 .append("<b>Code</b> ${networkRequest.statusCode}<br>")
                 .append("<b>Total Time</b> ${networkRequest.responseTime}<br>")
                 .append("<b>Headers</b> <br>$responseHeaders<br>")
