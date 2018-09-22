@@ -15,7 +15,7 @@ allprojects {
 ```
 ```groovy
 dependencies {
-    implementation 'com.github.shehabic:Sherlock:v0.1.0'
+    implementation 'com.github.shehabic:Sherlock:v0.3.0'
 }
 ```
 2. on app startup initialize sherlock by ``` NetworkSherlock.getInstance().init(appContext) ```
