@@ -2,7 +2,6 @@ package com.shehabic.sherlock.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.NavUtils
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
@@ -18,9 +17,8 @@ class NetRequestDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_netrequest_detail)
         setSupportActionBar(detail_toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        fab.setOnClickListener {
+            (supportFragmentManager.findFragmentByTag(NetRequestDetailFragment.TAG) as? NetRequestDetailFragment)?.share()
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -34,7 +32,7 @@ class NetRequestDetailActivity : AppCompatActivity() {
             }
 
             supportFragmentManager.beginTransaction()
-                .add(R.id.netrequest_detail_container, fragment)
+                .add(R.id.netrequest_detail_container, fragment, NetRequestDetailFragment.TAG)
                 .commit()
         }
     }

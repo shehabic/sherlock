@@ -1,5 +1,6 @@
 package com.shehabic.sherlock.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Html
@@ -42,5 +43,15 @@ class NetRequestDetailFragment : Fragment() {
 
     companion object {
         const val ARG_ITEM_ID = "item_id"
+        val TAG = NetRequestDetailFragment::class.java.canonicalName
+    }
+
+    fun share() {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/html"
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Emailing request/response")
+        intent.putExtra(Intent.EXTRA_HTML_TEXT, item?.getDetails())
+        intent.putExtra(Intent.EXTRA_TEXT, item?.getDetails())
+        startActivity(Intent.createChooser(intent, "Share via Email"))
     }
 }
