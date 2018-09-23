@@ -19,7 +19,7 @@ class NetworkRequestsList {
         ITEM_MAP.put(item.id, item)
     }
 
-    fun createRequestItem(request: NetworkRequests) = NetworkRequestItem(
+    private fun createRequestItem(request: NetworkRequests) = NetworkRequestItem(
         request.requestId.toString(),
         request.requestUrl,
         request.statusCode.toString(),
