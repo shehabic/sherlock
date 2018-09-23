@@ -160,15 +160,25 @@ class NetRequestDetailFragment : Fragment() {
             return txt
         }
 
-        private fun formatHeaders(txt: String): CharSequence? {
+        private fun formatHeaders(text: String): CharSequence? {
+            if (text.isEmpty()) {
+                return "---"
+            }
             return Html.fromHtml(
-                txt
-                    .replace(Regex("([A-Za-z-]+:)"), "<font color=\"#777777\">\$1</font>")
-                    .replace(Regex("\n"), "<br>")
+                text.split(Regex("\n"))
+                    .joinToString("<br>") {
+                        it.replace(
+                            Regex("^([A-Za-z-]+:)"),
+                            "<font color=\"#888888\">\$1</font>"
+                        )
+                    }
             )
         }
 
         private fun formatJson(txt: String): CharSequence? {
+            if (txt.isEmpty() || txt.trim() == "null") {
+                return "---"
+            }
             try {
                 if (txt.trim().startsWith("{", true)) {
                     return JSONObject(txt).toString(4)
