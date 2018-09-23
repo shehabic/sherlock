@@ -29,4 +29,8 @@ val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(SherlockOkHttpI
 ```java
 OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new SherlockOkHttpInterceptor()).build()
 ```
+## Check the demo app which is using many feature of Sherlock's lib
+
+![](https://github.com/shehabic/Sherlock/blob/master/screenshots/sherlock_preview.gif?raw=true)
+
 ## During the next few days I'll be adding more advanced examples on how to use it. 
