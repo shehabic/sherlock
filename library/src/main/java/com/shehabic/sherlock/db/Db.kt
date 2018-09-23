@@ -6,7 +6,7 @@ import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 
 
-@Database(entities = arrayOf(NetworkRequests::class, Sessions::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(NetworkRequests::class, Sessions::class), version = 2, exportSchema = false)
 abstract class Db : RoomDatabase() {
     abstract fun dao(): DaoAccess
 

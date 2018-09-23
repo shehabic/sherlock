@@ -10,11 +10,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import com.shehabic.sherlock.NetworkSherlock
 import com.shehabic.sherlock.R
@@ -228,15 +224,21 @@ class NetRequestListActivity : AppCompatActivity() {
 
         private fun getErrorDrawable(ctx: Context) = AppCompatResources.getDrawable(ctx, R.drawable.ic_sherlock_error)
         private fun getSuccessDrawable(ctx: Context) = AppCompatResources.getDrawable(ctx, R.drawable.ic_sherlock_success)
+        private fun getRedirectDrawable(ctx: Context) = AppCompatResources.getDrawable(ctx, R.drawable.ic_sherlock_redirect)
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
             val ctx = holder.statusImage.context
             holder.statusImage.setImageDrawable(
-                if (item.isSuccess) { getSuccessDrawable(ctx) } else { getErrorDrawable(ctx) }
+                if (item.isSuccess) { getSuccessDrawable(ctx) } else {
+                    if (item.isRedirect) {
+                        getRedirectDrawable(ctx)
+                    } else {
+                        getErrorDrawable(ctx)
+                    }
+                }
             )
             holder.statusCode.text = item.statusCode
-
             holder.requestUrl.text = item.url
             holder.method.text = item.networkRequest.method
             val dt = Date()
