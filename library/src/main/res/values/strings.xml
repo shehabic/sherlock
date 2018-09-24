@@ -10,4 +10,5 @@
     <string name="sherlock_cancel">CANCEL</string>
     <string name="sherlock_session_name">Session name</string>
     <string name="sherlock_rename">RENAME</string>
+    <string name="sherlock_delete_all_requests_in_session">Delete all requests in this session</string>
 </resources>

@@ -22,7 +22,7 @@
         android:id="@+id/status_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
         android:textAppearance="?attr/textAppearanceListItem"
         android:textSize="12sp"
@@ -30,13 +30,12 @@
         app:layout_constraintEnd_toEndOf="@+id/request_status"
         app:layout_constraintStart_toStartOf="@+id/request_status"
         app:layout_constraintTop_toBottomOf="@+id/request_status"
+        app:layout_constraintVertical_bias="0.0"
         tools:text="200" />
 
     <TextView
         android:id="@+id/request_url"
-        android:layout_width="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="8"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
@@ -44,6 +43,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="8dp"
+        android:ellipsize="end"
+        android:maxLines="8"
         android:textAppearance="?attr/textAppearanceListItem"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/time"

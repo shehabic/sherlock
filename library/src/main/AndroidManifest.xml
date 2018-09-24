@@ -7,7 +7,7 @@
             android:icon="@drawable/ic_sherlock_wifi"
             android:name=".ui.NetRequestListActivity"
             android:label="@string/title_netrequest_list"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/SherlockAppTheme.NoActionBar"
             android:taskAffinity="com.shehabic.sherlock.${applicationId}"
             >
             <intent-filter>
@@ -19,7 +19,7 @@
             android:name=".ui.NetRequestDetailActivity"
             android:label="@string/title_netrequest_detail"
             android:parentActivityName=".ui.NetRequestListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/SherlockAppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.shehabic.sherlock.ui.NetRequestListActivity" />

@@ -16,7 +16,7 @@ interface DaoAccess {
     @Query("SELECT * FROM NetworkRequests")
     fun getAllRequests(): List<NetworkRequests>
 
-    @Query("SELECT * FROM NetworkRequests WHERE session_id = :sessionId ORDER BY request_start_time ASC")
+    @Query("SELECT * FROM NetworkRequests WHERE session_id = :sessionId ORDER BY request_start_time DESC")
     fun getAllRequestsForSession(sessionId: Int): List<NetworkRequests>
 
     @Insert

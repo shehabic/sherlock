@@ -1,0 +1,7 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<resources>
+  <color name="sherlockPrimaryColor">#1565c0</color>
+  <color name="sherlockPrimaryLightColor">#C51166</color>
+  <color name="sherlockPrimaryDarkColor">#003c8f</color>
+  <color name="sherlockPrimaryTextColor">#ffffff</color>
+</resources>

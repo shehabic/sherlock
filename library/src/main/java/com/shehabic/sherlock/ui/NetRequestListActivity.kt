@@ -67,8 +67,26 @@ class NetRequestListActivity : AppCompatActivity() {
             R.id.action_rename -> renameSelectedSession()
             R.id.action_delete_session -> deleteSelectedSession()
             R.id.action_delete_all -> deleteAllData()
+            R.id.delete_session_requests -> deleteAllSessionRequests()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun deleteAllSessionRequests() {
+        getCurrentSession()?.let {
+            AlertDialog
+                .Builder(this)
+                .setCancelable(true)
+                .setMessage(getString(R.string.sherlock_delete_all_requests_in_session))
+                .setPositiveButton(R.string.sherlock_delete) { d: DialogInterface, _: Int ->
+                    NetworkSherlock.getInstance().deleteRequests(it)
+                    NetworkRequestsList.ITEMS.clear()
+                    NetworkRequestsList.ITEM_MAP.clear()
+                    netrequest_list.adapter?.notifyDataSetChanged()
+                }
+                .setNegativeButton(R.string.sherlock_cancel) { d: DialogInterface, _: Int -> d.dismiss() }
+                .show()
+        }
     }
 
     private fun deleteAllData() {
@@ -76,7 +94,6 @@ class NetRequestListActivity : AppCompatActivity() {
             AlertDialog
                 .Builder(this)
                 .setCancelable(true)
-                .setTitle(getString(R.string.delete_current_session))
                 .setMessage(getString(R.string.delete_current_session))
                 .setPositiveButton(R.string.sherlock_delete) { d: DialogInterface, _: Int ->
                     NetworkSherlock.getInstance().clearAll()
@@ -101,7 +118,6 @@ class NetRequestListActivity : AppCompatActivity() {
             AlertDialog
                 .Builder(this)
                 .setCancelable(true)
-                .setTitle(getString(R.string.delete_current_session))
                 .setMessage(getString(R.string.delete_current_session))
                 .setPositiveButton(R.string.sherlock_delete) { d: DialogInterface, _: Int ->
                     NetworkSherlock.getInstance().deleteSession(it)

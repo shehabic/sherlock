@@ -1,13 +1,17 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light" />
+    <style name="SherlockAppTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/sherlockPrimaryColor</item>
+        <item name="colorPrimaryDark">@color/sherlockPrimaryDarkColor</item>
+        <item name="colorAccent">@color/sherlockPrimaryLightColor</item>
+    </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="SherlockAppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="SherlockAppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="SherlockAppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

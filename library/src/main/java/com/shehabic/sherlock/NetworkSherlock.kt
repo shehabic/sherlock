@@ -254,4 +254,10 @@ class NetworkSherlock private constructor(private val config: Config) {
         validateInitialization()
         while (busyCreatingSession) Thread.sleep(100)
     }
+
+    fun deleteRequests(session: Sessions) {
+        dbWorkerThread?.postTask(Runnable {
+            getDb().dao().deleteAllCurrentSessionRequests(session.sessionId!!)
+        })
+    }
 }
