@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 27
@@ -44,3 +45,26 @@ repositories {
 }
 
 apply plugin: 'kotlin-android-extensions'
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
+publishing {
+    publications {
+        bar(MavenPublication) {
+            groupId 'com.github.shehabic'
+            artifactId 'sherlock'
+            version 'v.0.6.0'
+            artifact(bundleReleaseAar)
+        }
+    }
+    repositories {
+        maven {
+            url "~/.m2/repository"
+        }
+    }
+}
+apply plugin: 'com.github.dcendents.android-maven'
+
