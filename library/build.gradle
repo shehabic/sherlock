@@ -29,7 +29,6 @@ dependencies {
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
-    implementation 'com.google.code.gson:gson:2.8.2'
     kapt "android.arch.persistence.room:compiler:1.1.1"
     implementation "android.arch.lifecycle:extensions:$architecture_components_version"
     implementation 'com.android.support:appcompat-v7:27.1.1'

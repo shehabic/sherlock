@@ -39,16 +39,15 @@ class SherlockOkHttpInterceptor : Interceptor {
             request.isRedirect = response.isRedirect
             request.protocol = response.protocol().toString()
 
-            NetworkSherlock.getInstance().addRequest(request)
-            NetworkSherlock.getInstance().endRequest()
-
             return response
         } catch (e: IOException) {
             request.responseError = e.message
             request.responseTime = System.currentTimeMillis() - request.requestStartTime
+
+            throw e
+        } finally {
             NetworkSherlock.getInstance().addRequest(request)
             NetworkSherlock.getInstance().endRequest()
-            throw e
         }
     }
 }

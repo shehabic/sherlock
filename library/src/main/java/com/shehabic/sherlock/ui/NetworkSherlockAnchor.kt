@@ -110,9 +110,10 @@ class NetworkSherlockAnchor {
     }
 
     fun removeUI(activity: Activity?) {
-        val view: View? = anchors[activity!!::class.java.simpleName]
-        (view?.parent as? ViewGroup)?.removeView(view)
-        anchors.remove(activity::class.java.simpleName)
-        currentAnchor = null
+        anchors[activity!!::class.java.simpleName]?.let {
+            (it.parent as? ViewGroup)?.removeView(it)
+            anchors.remove(activity::class.java.simpleName)
+            currentAnchor = null
+        }
     }
 }
