@@ -4,15 +4,17 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import com.shehabic.sherlock.db.Db
 import com.shehabic.sherlock.db.DbWorkerThread
 import com.shehabic.sherlock.db.NetworkRequests
 import com.shehabic.sherlock.db.Sessions
+import com.shehabic.sherlock.ui.NetRequestListActivity
 import com.shehabic.sherlock.ui.NetworkSherlockAnchor
+import com.shehabic.sherlock.ui.SherlockActivity
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 @SuppressLint("SimpleDateFormat")
 fun Date.toSimpleString(): String = SimpleDateFormat("yyy-dd-MM hh:mm:ss").format(this)
@@ -27,6 +29,7 @@ class NetworkSherlock private constructor(private val config: Config) {
         @SuppressLint("StaticFieldLeak")
         private var INSTANCE: NetworkSherlock? = null
 
+        @JvmStatic
         fun getInstance(): NetworkSherlock {
             return INSTANCE ?: getInstance(Config())
         }
@@ -38,6 +41,16 @@ class NetworkSherlock private constructor(private val config: Config) {
         }
     }
 
+    enum class AppStartType {
+        AppContext, SherlockActivity, OtherActivity
+    }
+
+    enum class FirstLoadedActivity {
+        SherlockActivity, OtherActivity
+    }
+
+    private var appStartType: AppStartType? = null
+    private var firstLoadedActivity: FirstLoadedActivity? = null
     private var captureRequests: Boolean = true
     private var uiAnchor: NetworkSherlockAnchor = NetworkSherlockAnchor.getInstance()
     private var appContext: Context? = null
@@ -79,11 +92,13 @@ class NetworkSherlock private constructor(private val config: Config) {
 
     fun onActivityCreated(activity: Activity?) {
         activity?.let {
-            if (sessionId != null
-                && it.intent.action == Intent.ACTION_MAIN
-                && it::class.java.canonicalName.startsWith("com.shehabic.sherlock")) {
-                // delete session if it's empty
-                resetSessionToLastOneWithRequests()
+            firstLoadedActivity.ifNull {
+                firstLoadedActivity = if (it is NetRequestListActivity) FirstLoadedActivity.SherlockActivity
+                else FirstLoadedActivity.OtherActivity
+                if (firstLoadedActivity == FirstLoadedActivity.SherlockActivity
+                    && sessionId != null) {
+                    resetSessionToLastOneWithRequests()
+                }
             }
         }
     }
@@ -105,8 +120,9 @@ class NetworkSherlock private constructor(private val config: Config) {
     }
 
     fun onActivityResumed(activity: Activity?) {
-        if (config.showAnchor && isNonLibScreen(activity)) {
-            uiAnchor.addUI(activity)
+        activity?.let {
+            if ((it !is SherlockActivity).and(sessionId == null)) startSession()
+            if (config.showAnchor.and(isNonLibScreen(it))) uiAnchor.addUI(activity)
         }
     }
 
@@ -120,28 +136,27 @@ class NetworkSherlock private constructor(private val config: Config) {
         return !activity!!::class.java.canonicalName.contains(BuildConfig.APPLICATION_ID)
     }
 
-    private fun init(context: Context, reuseLastSession: Boolean) {
+    fun init(context: Context) {
         appContext?.let { return }
+        appStartType = getAppStartType(context)
         appContext = context.applicationContext
-        (context.applicationContext as Application).registerActivityLifecycleCallbacks(
-            activityCycleCallbacks
-        )
+        (context.applicationContext as Application).registerActivityLifecycleCallbacks(activityCycleCallbacks)
         dbWorkerThread = DbWorkerThread("dbWorkerThread")
         dbWorkerThread?.start()
         dbWorkerThread?.prepareHandler()
-        if (!reuseLastSession) {
-            startNewSession()
-        } else {
+        if (this.appStartType == AppStartType.SherlockActivity) {
             reuseLastSession()
+        } else {
+            startSession()
         }
     }
 
-    fun init(context: Context) {
-        init(context, reuseLastSession = false)
-    }
-
-    fun initWithReusingMostRecentSession(context: Context) {
-        init(context = context, reuseLastSession = true)
+    private fun getAppStartType(context: Context): AppStartType? {
+        return when (context) {
+            is NetRequestListActivity -> AppStartType.SherlockActivity
+            is Activity -> AppStartType.OtherActivity
+            else -> AppStartType.AppContext
+        }
     }
 
     private fun reuseLastSession() {
@@ -149,7 +164,7 @@ class NetworkSherlock private constructor(private val config: Config) {
         dbWorkerThread?.postTask(Runnable {
             val mostRecentSession: Sessions? = getDb().dao().getMostRecentSession()
             busyCreatingSession = false
-            mostRecentSession?.let { sessionId = it.sessionId } ?: run { startNewSession() }
+            mostRecentSession?.let { sessionId = it.sessionId } ?: run { startSession() }
         })
     }
 
@@ -158,7 +173,7 @@ class NetworkSherlock private constructor(private val config: Config) {
         return Db.getInstance(appContext!!)!!
     }
 
-    fun startNewSession() {
+    fun startSession() {
         validateInitialization()
         busyCreatingSession = true
         dbWorkerThread?.postTask(Runnable {
@@ -196,22 +211,23 @@ class NetworkSherlock private constructor(private val config: Config) {
     }
 
     fun deleteSession(session: Sessions) {
-        dbWorkerThread?.postTask(Runnable { getDb().dao().deleteSession(session) })
+        dbWorkerThread?.postTask(Runnable {
+            getDb().dao().deleteSession(session)
+            if (session.sessionId == this.sessionId) {
+                this.sessionId = null
+            }
+        })
     }
 
     fun renameSession(session: Sessions) {
         dbWorkerThread?.postTask(Runnable { getDb().dao().updateSession(session) })
     }
 
-    fun getCurrentRequestsSync(): List<NetworkRequests> {
-        waitUntilSessionIsReady()
-        return getDb().dao().getAllRequestsForSession(sessionId!!)
-    }
-
     fun clearAll() {
         dbWorkerThread?.postTask(Runnable {
             getDb().dao().getAllRequests()
             getDb().dao().deleteAllSessions()
+            this.sessionId = null
         })
     }
 

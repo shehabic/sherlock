@@ -3,13 +3,12 @@ package com.shehabic.sherlock.ui
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.NavUtils
-import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.shehabic.sherlock.NetworkSherlock
 import com.shehabic.sherlock.R
 import kotlinx.android.synthetic.main.activity_netrequest_detail.*
 
-class NetRequestDetailActivity : AppCompatActivity() {
+class NetRequestDetailActivity : SherlockActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

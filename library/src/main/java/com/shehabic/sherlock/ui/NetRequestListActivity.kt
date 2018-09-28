@@ -26,7 +26,7 @@ import java.lang.ref.WeakReference
 import java.util.*
 
 
-class NetRequestListActivity : AppCompatActivity() {
+class NetRequestListActivity : SherlockActivity() {
 
     private var twoPane: Boolean = false
 
@@ -47,7 +47,7 @@ class NetRequestListActivity : AppCompatActivity() {
     }
 
     private fun handleStartup() {
-        NetworkSherlock.getInstance().initWithReusingMostRecentSession(this)
+        NetworkSherlock.getInstance().init(this)
         setupUI()
     }
 
@@ -110,7 +110,11 @@ class NetRequestListActivity : AppCompatActivity() {
     }
 
     private fun getCurrentSession(): Sessions? {
-        return (session_list?.adapter as SessionsAdapter).getItem(session_list.selectedItemPosition)
+        return (session_list?.adapter as? SessionsAdapter)?.let {
+            return if (session_list.selectedItemPosition > -1 && it.count > session_list.selectedItemPosition) {
+                it.getItem(session_list.selectedItemPosition)
+            } else null
+        }
     }
 
     private fun deleteSelectedSession() {
@@ -160,7 +164,7 @@ class NetRequestListActivity : AppCompatActivity() {
                 override fun onResults(results: List<Sessions>?) {
                     weakActivity.get()?.let { activity ->
                         runOnUiThread {
-                            session_list?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+                            session_list?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                                 override fun onNothingSelected(parent: AdapterView<*>?) {
                                     netrequest_list.adapter = null
                                 }
@@ -246,7 +250,9 @@ class NetRequestListActivity : AppCompatActivity() {
             val item = values[position]
             val ctx = holder.statusImage.context
             holder.statusImage.setImageDrawable(
-                if (item.isSuccess) { getSuccessDrawable(ctx) } else {
+                if (item.isSuccess) {
+                    getSuccessDrawable(ctx)
+                } else {
                     if (item.isRedirect) {
                         getRedirectDrawable(ctx)
                     } else {
