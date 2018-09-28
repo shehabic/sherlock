@@ -41,10 +41,12 @@ class NetworkSherlockAnchor {
 
     fun onRequestStarted() {
         busyCount++
-        if (currentAnchor != null && busyCount == 1) {
+        if (currentAnchor != null && busyCount >= 1) {
             (currentAnchor?.context as? Activity)?.runOnUiThread {
-                ImageViewCompat.setImageTintMode(currentAnchor!!, PorterDuff.Mode.MULTIPLY)
-                ImageViewCompat.setImageTintList(currentAnchor!!, ColorStateList.valueOf(Color.GREEN))
+                currentAnchor?.let {
+                    ImageViewCompat.setImageTintMode(it, PorterDuff.Mode.MULTIPLY)
+                    ImageViewCompat.setImageTintList(it, ColorStateList.valueOf(Color.GREEN))
+                }
             }
         }
     }
@@ -54,7 +56,7 @@ class NetworkSherlockAnchor {
         busyCount = Math.max(busyCount, 0)
         if (currentAnchor != null && busyCount == 0) {
             (currentAnchor?.context as? Activity)?.runOnUiThread {
-                ImageViewCompat.setImageTintList(currentAnchor!!, null)
+                currentAnchor?.let { ImageViewCompat.setImageTintList(it, null) }
             }
         }
     }
