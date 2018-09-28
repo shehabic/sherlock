@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.shehabic.sherlock.R
 import com.shehabic.sherlock.ifNull
+import android.util.DisplayMetrics
 
 class NetworkSherlockAnchor {
     private var lastX = -1.0f
@@ -24,6 +25,8 @@ class NetworkSherlockAnchor {
     private var busyCount: Int = 0
     private val anchors: MutableMap<String, View> = HashMap()
     private var currentAnchor: AppCompatImageView? = null
+    private var maxX = -1f
+    private var maxY = -1f
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -62,7 +65,10 @@ class NetworkSherlockAnchor {
         val display = activity?.windowManager?.defaultDisplay!!
         val buttonSize = Math.min(display.width, display.height) / 8
         val view = AppCompatImageView(activity)
-
+        val metrics = DisplayMetrics()
+        activity.windowManager.defaultDisplay.getMetrics(metrics)
+        maxY = metrics.heightPixels.toFloat() - buttonSize
+        maxX = metrics.widthPixels.toFloat() - buttonSize
 
         view.alpha = 0.7f
         view.setImageResource(R.drawable.ic_sherlock_wifi)
@@ -72,8 +78,8 @@ class NetworkSherlockAnchor {
         val layoutParams: FrameLayout.LayoutParams?
         if (lastX != -1f || lastY != -1f) {
             layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize, Gravity.NO_GRAVITY or Gravity.NO_GRAVITY)
-            view.x = lastX
-            view.y = lastY
+            view.x =  Math.min(Math.max(0f, lastX), maxX)
+            view.y =  Math.min(Math.max(0f, lastY), maxY)
         } else {
             layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize, Gravity.END or Gravity.TOP)
             layoutParams.rightMargin = 0
@@ -93,8 +99,8 @@ class NetworkSherlockAnchor {
                     MotionEvent.ACTION_MOVE -> {
                         val diffX = touchPos.x - event.x
                         val diffY = touchPos.y - event.y
-                        lastX = view.x - diffX
-                        lastY = view.y - diffY
+                        lastX = Math.min(Math.max(0f, view.x - diffX), maxX)
+                        lastY = Math.min(Math.max(0f, view.y - diffY), maxY)
                         view.x = lastX
                         view.y = lastY
                         lastX = view.x
