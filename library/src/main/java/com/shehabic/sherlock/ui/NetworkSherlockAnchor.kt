@@ -63,65 +63,71 @@ class NetworkSherlockAnchor {
 
     @SuppressLint("ClickableViewAccessibility")
     fun addUI(activity: Activity?) {
-        val viewGroup = activity?.getWindow()?.decorView as? ViewGroup
-        val display = activity?.windowManager?.defaultDisplay!!
-        val buttonSize = Math.min(display.width, display.height) / 8
-        val view = AppCompatImageView(activity)
-        val metrics = DisplayMetrics()
-        activity.windowManager.defaultDisplay.getMetrics(metrics)
-        maxY = metrics.heightPixels.toFloat() - buttonSize
-        maxX = metrics.widthPixels.toFloat() - buttonSize
+        activity?.let {
+            if (it.isFinishing) return
+            val viewGroup = it.window.decorView as ViewGroup
+            val display = it.windowManager.defaultDisplay
+            val buttonSize = Math.min(display.width, display.height) / 8
+            val view = AppCompatImageView(it)
+            val metrics = DisplayMetrics()
+            it.windowManager.defaultDisplay.getMetrics(metrics)
+            maxY = metrics.heightPixels.toFloat() - buttonSize
+            maxX = metrics.widthPixels.toFloat() - buttonSize
 
-        view.alpha = 0.7f
-        view.setImageResource(R.drawable.ic_sherlock_wifi)
-        view.setOnClickListener { v ->
-            v.context.startActivity(Intent(v.context, NetRequestListActivity::class.java))
-        }
-        val layoutParams: FrameLayout.LayoutParams?
-        if (lastX != -1f || lastY != -1f) {
-            layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize, Gravity.NO_GRAVITY or Gravity.NO_GRAVITY)
-            view.x =  Math.min(Math.max(0f, lastX), maxX)
-            view.y =  Math.min(Math.max(0f, lastY), maxY)
-        } else {
-            layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize, Gravity.END or Gravity.TOP)
-            layoutParams.rightMargin = 0
-            layoutParams.topMargin = buttonSize / 2
-        }
-        view.layoutParams = layoutParams
-        view.setOnTouchListener(object : View.OnTouchListener {
-            var touchTime: Long = 0
-            var touchPos = PointF()
-
-            override fun onTouch(view: View, event: MotionEvent): Boolean {
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        touchTime = SystemClock.uptimeMillis()
-                        touchPos.set(event.x, event.y)
-                    }
-                    MotionEvent.ACTION_MOVE -> {
-                        val diffX = touchPos.x - event.x
-                        val diffY = touchPos.y - event.y
-                        lastX = Math.min(Math.max(0f, view.x - diffX), maxX)
-                        lastY = Math.min(Math.max(0f, view.y - diffY), maxY)
-                        view.x = lastX
-                        view.y = lastY
-                        lastX = view.x
-                        lastY = view.y
-                    }
-                }
-                return SystemClock.uptimeMillis() - touchTime > 200
+            view.alpha = 0.7f
+            view.setImageResource(R.drawable.ic_sherlock_wifi)
+            view.setOnClickListener { v ->
+                v.context.startActivity(Intent(v.context, NetRequestListActivity::class.java))
             }
-        })
-        viewGroup?.addView(view)
-        anchors[activity::class.java.simpleName] = view
-        currentAnchor = view
+            val layoutParams: FrameLayout.LayoutParams?
+            if (lastX != -1f || lastY != -1f) {
+                layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize, Gravity.NO_GRAVITY or Gravity.NO_GRAVITY)
+                view.x = Math.min(Math.max(0f, lastX), maxX)
+                view.y = Math.min(Math.max(0f, lastY), maxY)
+            } else {
+                layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize, Gravity.END or Gravity.TOP)
+                layoutParams.rightMargin = 0
+                layoutParams.topMargin = buttonSize / 2
+            }
+            view.layoutParams = layoutParams
+            view.setOnTouchListener(object : View.OnTouchListener {
+                var touchTime: Long = 0
+                var touchPos = PointF()
+
+                override fun onTouch(view: View, event: MotionEvent): Boolean {
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            touchTime = SystemClock.uptimeMillis()
+                            touchPos.set(event.x, event.y)
+                        }
+                        MotionEvent.ACTION_MOVE -> {
+                            val diffX = touchPos.x - event.x
+                            val diffY = touchPos.y - event.y
+                            lastX = Math.min(Math.max(0f, view.x - diffX), maxX)
+                            lastY = Math.min(Math.max(0f, view.y - diffY), maxY)
+                            view.x = lastX
+                            view.y = lastY
+                            lastX = view.x
+                            lastY = view.y
+                        }
+                    }
+                    return SystemClock.uptimeMillis() - touchTime > 200
+                }
+            })
+            viewGroup.addView(view)
+            anchors[it::class.java.simpleName] = view
+            currentAnchor = view
+        }
     }
 
     fun removeUI(activity: Activity?) {
-        anchors[activity!!::class.java.simpleName]?.let {
-            (it.parent as? ViewGroup)?.removeView(it)
-            anchors.remove(activity::class.java.simpleName)
-            currentAnchor = null
+        activity?.let {
+            if (it.isFinishing) return
+            anchors[it::class.java.simpleName]?.let { anchor ->
+                (anchor.parent as? ViewGroup)?.removeView(anchor)
+                anchors.remove(it::class.java.simpleName)
+                currentAnchor = null
+            }
         }
     }
 }
