@@ -29,6 +29,20 @@ val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(SherlockOkHttpI
 ```java
 OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new SherlockOkHttpInterceptor()).build()
 ```
+
+## Advanced options
+Show/Hide anchor - Show/Hide network activity indicator
+**Kotlin**
+```kotlin
+NetworkSherlock
+  .getInstance(NetworkSherlock.Config(showAnchor = true, showNetworkActivity = true))
+  .init(this)
+```
+## Pause/Resume Recording
+```kotlin
+NetworkSherlock.getInstance().pauseRecording()
+NetworkSherlock.getInstance().resumeRecording()
+``` 
 ## Check the demo app which is using many feature of Sherlock's lib
 
 ![](https://github.com/shehabic/Sherlock/blob/master/screenshots/sherlock_preview.gif?raw=true)
