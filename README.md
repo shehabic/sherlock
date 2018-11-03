@@ -49,8 +49,8 @@ NetworkSherlock.getInstance().resumeRecording()
 ![](https://github.com/shehabic/Sherlock/blob/master/screenshots/sherlock_preview.gif?raw=true)
 
 ## Roadmap
-- Enahnce Export Format
--- Export whole sessions in a machine readable format
--- Export request in cURL format
--- Export standard http-request format
--- Export Charles-Proxy files for sessions 
+### Enahnce Export Format
+  - Export whole sessions in a machine readable format
+  - Export request in cURL format
+  - Export standard http-request format
+  - Export Charles-Proxy files for sessions 
