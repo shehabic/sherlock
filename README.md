@@ -48,4 +48,9 @@ NetworkSherlock.getInstance().resumeRecording()
 
 ![](https://github.com/shehabic/Sherlock/blob/master/screenshots/sherlock_preview.gif?raw=true)
 
-## During the next few days I'll be adding more advanced examples on how to use it. 
+## Roadmap
+- Enahnce Export Format
+-- Export whole sessions in a machine readable format
+-- Export request in cURL format
+-- Export standard http-request format
+-- Export Charles-Proxy files for sessions 
