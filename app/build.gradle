@@ -44,6 +44,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.android.support:multidex:1.0.3'
-    debugImplementation project(':library')
-    releaseImplementation project(':sherlock_no_op')
+    debugImplementation project(':sherlock')
+    releaseImplementation project(':sherlock-no-op')
 }
