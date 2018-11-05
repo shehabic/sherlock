@@ -50,9 +50,6 @@ task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier "sources"
 }
-ext {
-    artifactId = 'sherlock'
-}
 //apply from: rootProject.file('gradle/publish.gradle')
 publishing {
     publications {
