@@ -54,4 +54,3 @@ ext {
     artifactId = 'sherlock'
 }
 apply from: rootProject.file('gradle/publish.gradle')
-apply plugin: 'com.github.dcendents.android-maven'
