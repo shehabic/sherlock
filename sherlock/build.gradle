@@ -60,7 +60,7 @@ publishing {
             groupId 'com.github.shehabic'
             artifactId 'sherlock'
             version VERSION_NAME
-            artifact(bundleReleaseAar)
+            artifact(bundleDebugAar)
         }
     }
     repositories {
