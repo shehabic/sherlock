@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 28
@@ -41,4 +42,22 @@ repositories {
     mavenCentral()
 }
 
-apply from: rootProject.file('gradle/publish.gradle')
+publishing {
+    publications {
+        bar(MavenPublication) {
+            groupId 'com.github.shehabic'
+            artifactId 'sherlock-no-op'
+            version VERSION_NAME
+            artifact(bundleReleaseAar)
+        }
+    }
+    repositories {
+        maven {
+            url "~/.m2/repository"
+        }
+    }
+}
+apply plugin: 'com.github.dcendents.android-maven'
+
+
+//apply from: rootProject.file('gradle/publish.gradle')

@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 27
@@ -52,4 +53,20 @@ task sourceJar(type: Jar) {
 ext {
     artifactId = 'sherlock'
 }
-apply from: rootProject.file('gradle/publish.gradle')
+//apply from: rootProject.file('gradle/publish.gradle')
+publishing {
+    publications {
+        bar(MavenPublication) {
+            groupId 'com.github.shehabic'
+            artifactId 'sherlock'
+            version VERSION_NAME
+            artifact(bundleReleaseAar)
+        }
+    }
+    repositories {
+        maven {
+            url "~/.m2/repository"
+        }
+    }
+}
+apply plugin: 'com.github.dcendents.android-maven'
