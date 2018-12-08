@@ -17,6 +17,13 @@ allprojects {
 dependencies {
     debugImplementation 'com.github.shehabic.sherlock:sherlock:v0.10.5'
     releaseImplementation 'com.github.shehabic.sherlock:sherlock-no-op:v0.10.5'
+    
+    // the next part is important (until there is a better solution)
+    implementation "android.arch.persistence.room:runtime:$architecture_version"
+    // if your project uses kotlin:
+    kapt "android.arch.persistence.room:compiler:$architecture_version"
+    // or if your project doesn't use kotlin:
+    annotationProcessor "android.arch.persistence.room:compiler:$architecture_version"
 }
 ```
 2. on app startup initialize sherlock by ``` NetworkSherlock.getInstance().init(appContext) ```
