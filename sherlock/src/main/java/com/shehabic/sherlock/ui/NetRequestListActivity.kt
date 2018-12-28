@@ -7,7 +7,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -58,6 +57,12 @@ class NetRequestListActivity : SherlockActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.sherlock_menu, menu)
+        for (i in 0 until menu.size()) {
+            val menuItem = menu.getItem(i)
+            if (menuItem.itemId == R.id.sherlock_show_floating_anchor) {
+                menuItem.isChecked = NetworkSherlock.getInstance().shouldShowAnchorItem()
+            }
+        }
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -68,8 +73,18 @@ class NetRequestListActivity : SherlockActivity() {
             R.id.action_delete_session -> deleteSelectedSession()
             R.id.action_delete_all -> deleteAllData()
             R.id.delete_session_requests -> deleteAllSessionRequests()
+            R.id.sherlock_show_floating_anchor -> handleAnchorItemVisibilityToggle(item)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun handleAnchorItemVisibilityToggle(item: MenuItem) {
+        item.isChecked = !NetworkSherlock.getInstance().shouldShowAnchorItem()
+        if (!item.isChecked) {
+            NetworkSherlock.getInstance().hideAnchorItem()
+        } else {
+            NetworkSherlock.getInstance().showAnchorItem()
+        }
     }
 
     private fun deleteAllSessionRequests() {

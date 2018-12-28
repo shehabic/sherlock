@@ -15,8 +15,8 @@ allprojects {
 ```
 ```groovy
 dependencies {
-    debugImplementation 'com.github.shehabic.sherlock:sherlock:v0.10.5'
-    releaseImplementation 'com.github.shehabic.sherlock:sherlock-no-op:v0.10.5'
+    debugImplementation 'com.github.shehabic.sherlock:sherlock:v0.11.0'
+    releaseImplementation 'com.github.shehabic.sherlock:sherlock-no-op:v0.11.0'
     
     // the next part is important (until there is a better solution)
     implementation "android.arch.persistence.room:runtime:$architecture_version"

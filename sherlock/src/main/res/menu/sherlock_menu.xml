@@ -4,25 +4,31 @@
     tools:context=".MainActivity">
     <item
         android:id="@+id/action_rename"
-        android:title="@string/sherlock_rename_session"
         android:orderInCategory="100"
-        app:showAsAction="never"/>
+        android:title="@string/sherlock_rename_session"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_delete_session"
-        android:title="@string/sherlock_delete_session"
         android:orderInCategory="200"
-        app:showAsAction="never"/>
+        android:title="@string/sherlock_delete_session"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_delete_all"
-        android:title="@string/sherlock_delete_all"
         android:orderInCategory="300"
-        app:showAsAction="never"/>
+        android:title="@string/sherlock_delete_all"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/delete_session_requests"
-        android:title="@string/sherlock_delete_all_requests_in_session"
         android:orderInCategory="300"
-        app:showAsAction="never"/>
+        android:title="@string/sherlock_delete_all_requests_in_session"
+        app:showAsAction="never" />
+    <group android:checkableBehavior="all" >
+        <item
+            android:orderInCategory="400"
+            android:id="@+id/sherlock_show_floating_anchor"
+            android:title="@string/sherlock_show_floating_anchor" />
+    </group>
 </menu>

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import com.shehabic.sherlock.db.Db
 import com.shehabic.sherlock.db.DbWorkerThread
@@ -23,7 +24,7 @@ infix fun Any?.ifNull(block: () -> Unit) {
     if (this == null) block()
 }
 
-class NetworkSherlock private constructor(private val config: Config) {
+class NetworkSherlock private constructor(private var config: Config?) {
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -31,14 +32,16 @@ class NetworkSherlock private constructor(private val config: Config) {
 
         @JvmStatic
         fun getInstance(): NetworkSherlock {
-            return INSTANCE ?: getInstance(Config())
+            return INSTANCE ?: getInstance(null)
         }
 
-        fun getInstance(config: Config): NetworkSherlock {
+        @JvmStatic
+        fun getInstance(config: Config?): NetworkSherlock {
             INSTANCE.ifNull { INSTANCE = NetworkSherlock(config) }
-
             return INSTANCE!!
         }
+
+        private var KEY_SHOW_ANCHOR = "show_anchor"
     }
 
     enum class AppStartType {
@@ -58,6 +61,7 @@ class NetworkSherlock private constructor(private val config: Config) {
     private var dbWorkerThread: DbWorkerThread? = null
     private val activityCycleCallbacks = NetworkSherlock.NetworkSherlockLifecycleHandler()
     private var busyCreatingSession = false
+    private var sharedPrefs: SharedPreferences? = null
 
     data class Config(
         val showAnchor: Boolean = true,
@@ -122,12 +126,12 @@ class NetworkSherlock private constructor(private val config: Config) {
     fun onActivityResumed(activity: Activity?) {
         activity?.let {
             if ((it !is SherlockActivity).and(sessionId == null)) startSession()
-            if (config.showAnchor.and(isNonLibScreen(it))) uiAnchor.addUI(activity)
+            if (shouldShowAnchorItem().and(isNonLibScreen(it))) uiAnchor.addUI(activity)
         }
     }
 
     fun onActivityPaused(activity: Activity?) {
-        if (config.showAnchor && isNonLibScreen(activity)) {
+        if (shouldShowAnchorItem() && isNonLibScreen(activity)) {
             uiAnchor.removeUI(activity)
         }
     }
@@ -144,10 +148,16 @@ class NetworkSherlock private constructor(private val config: Config) {
         dbWorkerThread = DbWorkerThread("dbWorkerThread")
         dbWorkerThread?.start()
         dbWorkerThread?.prepareHandler()
+        sharedPrefs = context.getSharedPreferences("com.shehabic.sherlock", Context.MODE_PRIVATE)
         if (this.appStartType == AppStartType.SherlockActivity) {
             reuseLastSession()
         } else {
             startSession()
+        }
+        config.ifNull {
+            this.config = Config(
+                showAnchor = sharedPrefs?.getBoolean(KEY_SHOW_ANCHOR, true) ?: true
+            )
         }
     }
 
@@ -192,13 +202,13 @@ class NetworkSherlock private constructor(private val config: Config) {
     }
 
     fun startRequest() {
-        if (config.showNetworkActivity) {
+        if (showNetworkActivity()) {
             uiAnchor.onRequestStarted()
         }
     }
 
     fun endRequest() {
-        if (config.showNetworkActivity) {
+        if (showNetworkActivity()) {
             uiAnchor.onRequestEnded()
         }
     }
@@ -275,5 +285,18 @@ class NetworkSherlock private constructor(private val config: Config) {
         dbWorkerThread?.postTask(Runnable {
             getDb().dao().deleteAllCurrentSessionRequests(session.sessionId!!)
         })
+    }
+
+    private fun showNetworkActivity() = config?.showNetworkActivity ?: true
+
+    internal fun shouldShowAnchorItem() = config?.showAnchor ?: true
+
+    internal fun showAnchorItem() = modifyAnchorVisibility(true)
+
+    internal fun hideAnchorItem() = modifyAnchorVisibility(false)
+
+    private fun modifyAnchorVisibility(visible: Boolean) {
+        this.config = config?.copy(showAnchor = visible) ?: Config(showAnchor = visible)
+        sharedPrefs?.let { it.edit().putBoolean(KEY_SHOW_ANCHOR, visible).apply() }
     }
 }
