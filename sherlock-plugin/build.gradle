@@ -1,5 +1,6 @@
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven-publish'
+apply plugin: 'com.gradle.plugin-publish'
 
 repositories {
     google()
@@ -17,17 +18,35 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
 }
 
-task sourceJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier "sources"
+gradlePlugin {
+    plugins {
+        foodoraQuality {
+            id = 'sherlock-plugin'
+            implementationClass = 'com.shehabic.sherlock.plugin.SherlockPlugin'
+        }
+    }
 }
+
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+
 //apply from: rootProject.file('gradle/publish.gradle')
 publishing {
     publications {
-        bar(MavenPublication) {
+        maven(MavenPublication) {
             groupId 'com.github.shehabic'
             artifactId 'sherlock-plugin'
             version VERSION_NAME
+            from components.java
         }
     }
     repositories {
