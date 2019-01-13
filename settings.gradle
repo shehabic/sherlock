@@ -1,1 +1,1 @@
-include ':app', ':sherlock', ':sherlock-no-op'
+include ':app', ':sherlock', ':sherlock-no-op',":sherlock-plugin"
