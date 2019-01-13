@@ -4,10 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'sherlock-plugin'
 
-SherlockExtension {
-    enabled = true
-}
-
 android {
     configurations {
         all {
