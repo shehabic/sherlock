@@ -75,6 +75,8 @@ class SherlockTransformer extends Transform {
     }
 
     public void transform(TransformInvocation invocation) throws IOException {
+        sherlockEnabled = project.getExtensions().getByType(SherlockExtension.class).enabled;
+        if (!sherlockEnabled) return;
         Collection<TransformInput> inputs = invocation.getInputs();
         Collection<TransformInput> referencedInputs = invocation.getReferencedInputs();
         TransformOutputProvider outputProvider = invocation.getOutputProvider();
