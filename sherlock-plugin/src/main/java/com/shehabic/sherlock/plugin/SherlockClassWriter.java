@@ -5,13 +5,10 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import static org.objectweb.asm.ClassReader.SKIP_FRAMES;
 import static org.objectweb.asm.ClassWriter.COMPUTE_FRAMES;
-import static org.objectweb.asm.Opcodes.ASM6;
-
-import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.AdviceAdapter;
 
 /**
  * @author shehabic
@@ -25,36 +22,9 @@ class SherlockClassWriter {
         return writer.toByteArray();
     }
 
-    public static class ClassInfo {
-        org.objectweb.asm.Type type;
-        String[] interfaces;
-
-        ClassInfo() { }
-    }
-
-
     public class SherlockClassVisitor extends ClassVisitor {
-
-        private final ClassInfo mClassInfo = new ClassInfo();
-
-        public void visit(
-            int version,
-            int access,
-            String className,
-            String signature,
-            String superName,
-            String[] interfaces
-        ) {
-            super.visit(version, access, className, signature, superName, interfaces);
-
-            mClassInfo.type = Type.getObjectType(className);
-            mClassInfo.interfaces = interfaces;
-        }
-
-
         SherlockClassVisitor(ClassVisitor cv) {
-            super(ASM6, cv);
-            this.cv = cv;
+            super(Opcodes.ASM5, cv);
         }
 
         @Override
@@ -65,49 +35,44 @@ class SherlockClassWriter {
             String signature,
             String[] exceptions
         ) {
-            MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
-            return new SherlockMethodVisitor(api, mv, access, name, desc);
-        }
-
-        public void visitInnerClass(String name, String outerName, String innerName, int access) {
-            super.visitInnerClass(name, outerName, innerName, access);
-        }
-
-        public void visitEnd() {
-            super.visitEnd();
+            if (name.equals("build")) {
+                System.out.println("Will do the builder here ... ");
+                return new SherlockMethodVisitor(super.visitMethod(
+                    access,
+                    name,
+                    desc,
+                    signature,
+                    exceptions
+                ));
+            }
+            return super.visitMethod(access, name, desc, signature, exceptions);
         }
     }
 
-    static class SherlockMethodVisitor extends AdviceAdapter {
 
-        SherlockMethodVisitor(int api, MethodVisitor mv, int access, String name, String desc) {
-            super(api, mv, access, name, desc);
+    private static class SherlockMethodVisitor extends MethodVisitor {
+        SherlockMethodVisitor(MethodVisitor mv) {
+            super(Opcodes.ASM5, mv);
         }
 
-        public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-            switch (name) {
-                case "execute":
-                    mv.visitMethodInsn(
-                        INVOKESTATIC,
-                        "com/shehabic/sherlock/interceptors/SherlockOkHttpInterceptor",
-                        "execute",
-                        "(Lokhttp3/Call;)Lokhttp3/Response;",
-                        false
-                    );
-                    break;
-                case "enqueue":
-                    mv.visitMethodInsn(
-                        INVOKESTATIC,
-                        "com/shehabic/sherlock/interceptors/SherlockOkHttpInterceptor",
-                        "enqueue",
-                        "(Lokhttp3/Call;Lokhttp3/Callback;)V",
-                        false
-                    );
-                    break;
-                default:
-                    super.visitMethodInsn(opcode, owner, name, desc, itf);
-                    break;
-            }
+        // This method will be called before almost all instructions
+        @Override
+        public void visitCode() {
+            // Puts 'this' on top of the stack. If your method is static just delete it
+            visitVarInsn(Opcodes.ALOAD, 0);
+            // Takes instance of class "the/full/name/of/your/Class" from top of the stack and put value of field interceptors
+            // "Ljava/util/List;" is just internal name of java.util.List
+            visitFieldInsn(Opcodes.GETFIELD, "okhttp3/OkHttpClient$Builder", "interceptors", "Ljava/util/List;");
+            // Before we call add method of list we have to put target value on top of the stack
+            visitTypeInsn(Opcodes.NEW, "com/shehabic/sherlock/interceptors/SherlockOkHttpInterceptor");
+            visitInsn(Opcodes.DUP);
+            // We have to call classes constructor
+            // Internal name of constructor - <init>
+            // ()V - signature of method. () - method doesn't have parameters. V - method returns void
+            visitMethodInsn(Opcodes.INVOKESPECIAL, "com/shehabic/sherlock/interceptors/SherlockOkHttpInterceptor", "<init>", "()V", false);
+            // So on top of the stack we have initialized instance of com/shehabic/sherlock/interceptors/SherlockOkHttpInterceptor
+            // Now we can put it into list
+            visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z", true);
         }
     }
 }

@@ -4,9 +4,19 @@ import com.android.build.api.transform.DirectoryInput;
 import com.android.build.api.transform.Format;
 import com.android.build.api.transform.JarInput;
 import com.android.build.api.transform.QualifiedContent;
+import com.android.build.api.transform.QualifiedContent.Scope;
 import com.android.build.api.transform.Status;
 import com.android.build.api.transform.Transform;
+import com.android.build.api.transform.TransformInput;
+import com.android.build.api.transform.TransformInvocation;
+import com.android.build.api.transform.TransformOutputProvider;
+import com.android.build.gradle.AppExtension;
+import com.android.build.gradle.internal.pipeline.TransformManager;
+import com.google.common.collect.Lists;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.gradle.api.Project;
 
 import java.io.File;
@@ -21,42 +31,27 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
-import com.android.build.api.transform.QualifiedContent.DefaultContentType;
-import com.android.build.api.transform.QualifiedContent.Scope;
-import com.android.build.api.transform.TransformInput;
-import com.android.build.api.transform.TransformInvocation;
-import com.android.build.api.transform.TransformOutputProvider;
-import com.android.build.gradle.AppExtension;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
 import java.util.Map;
+import java.util.Set;
 
 class SherlockTransformer extends Transform {
 
     private final Project project;
     private final Set<QualifiedContent.ContentType> typeClasses;
-    private final Set<QualifiedContent.Scope> scopes;
+    private final Set<Scope> scopes;
     private AppExtension appExt;
     private boolean sherlockEnabled = true;
     private SherlockInstrumentation instrumentation;
 
     SherlockTransformer(final Project project) {
         this.project = project;
-        this.typeClasses = Sets.newHashSet();
-        this.typeClasses.add(DefaultContentType.CLASSES);
-        this.scopes = ImmutableSet.of(Scope.EXTERNAL_LIBRARIES, Scope.PROJECT, Scope.SUB_PROJECTS);
+        this.typeClasses = TransformManager.CONTENT_CLASS;
+        this.scopes = TransformManager.SCOPE_FULL_PROJECT;
     }
 
     @Override
     public String getName() {
-        return "SherlockPlugin";
+        return this.getClass().getSimpleName();
     }
 
     @Override
@@ -65,7 +60,7 @@ class SherlockTransformer extends Transform {
     }
 
     @Override
-    public Set<? super QualifiedContent.Scope> getScopes() {
+    public Set<? super Scope> getScopes() {
         return scopes;
     }
 
@@ -83,20 +78,15 @@ class SherlockTransformer extends Transform {
         boolean incremental = invocation.isIncremental();
         this.appExt = (AppExtension)this.project.getExtensions().findByName("android");
         List<URL> runtimeCP = this.buildRuntimeClasspath(inputs, referencedInputs);
-
         try (URLClassLoader cl = new URLClassLoader(runtimeCP.toArray(new URL[0]), null)) {
-            if (!incremental) {
-                outputProvider.deleteAll();
-            }
+            if (!incremental) outputProvider.deleteAll();
             this.instrumentation = new SherlockInstrumentation(cl);
-            Iterator iterator = inputs.iterator();
-
-            while (iterator.hasNext()) {
-                TransformInput ti = (TransformInput) iterator.next();
-                this.transformDirectoryInputs(ti, incremental, outputProvider);
-                this.transformJarInputs(ti, incremental, outputProvider);
+            for (TransformInput input: inputs) {
+                this.transformDirectoryInputs(input, incremental, outputProvider);
+                this.transformJarInputs(input, incremental, outputProvider);
             }
         } catch (Throwable e) {
+            System.out.println("[Sherlock Plugin Error]: " + e.getLocalizedMessage());
             e.printStackTrace();
             throw e;
         }
@@ -167,6 +157,7 @@ class SherlockTransformer extends Transform {
                             FileUtils.deleteQuietly(outDir);
                         } else {
                             String filename = String.valueOf(jarInput.getFile());
+//                            System.out.println("[Sherlock Plugin] --- Skipping ---> " + filename);
                         }
                     }
 
@@ -187,9 +178,7 @@ class SherlockTransformer extends Transform {
             Map changed;
 
             do {
-                if (!dirIterators.hasNext()) {
-                    return;
-                }
+                if (!dirIterators.hasNext()) return;
 
                 di = (DirectoryInput) dirIterators.next();
                 String uniqueName = DigestUtils.md5Hex(di.getFile().getPath());
@@ -237,6 +226,7 @@ class SherlockTransformer extends Transform {
             try {
                 return file.toURI().toURL();
             } catch (MalformedURLException e) {
+                System.out.println("Sherlock Plugin Error: " + e.getLocalizedMessage());
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }

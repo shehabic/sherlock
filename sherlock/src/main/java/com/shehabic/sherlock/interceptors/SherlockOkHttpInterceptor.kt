@@ -8,57 +8,8 @@ import java.io.EOFException
 import java.io.IOException
 import java.nio.charset.Charset
 
-class SherlockProxyCallback(
-    private val callback: Callback,
-    private val request: NetworkRequests
-) : Callback {
-    override fun onFailure(call: Call, e: IOException) {
-        request.responseError = e.message
-        request.responseTime = System.currentTimeMillis() - request.requestStartTime
-        NetworkSherlock.getInstance().addRequest(request)
-        NetworkSherlock.getInstance().endRequest()
-        callback.onFailure(call, e)
-    }
-
-    override fun onResponse(call: Call, response: Response) {
-        SherlockOkHttpInterceptor.appendResponseData(response, request)
-        NetworkSherlock.getInstance().addRequest(request)
-        NetworkSherlock.getInstance().endRequest()
-        callback.onResponse(call, response)
-    }
-}
-
 class SherlockOkHttpInterceptor : Interceptor {
     companion object {
-        @JvmStatic
-        @Throws(IOException::class)
-        fun execute(call: Call): Response {
-            val response: Response?
-            var request = createNetworkRequest(call.request())
-            NetworkSherlock.getInstance().startRequest()
-            try {
-                response = call.execute()
-                appendResponseData(response, request)
-                NetworkSherlock.getInstance().addRequest(request)
-                NetworkSherlock.getInstance().endRequest()
-
-                return response
-            } catch (e: IOException) {
-                request.responseError = e.message
-                request.responseTime = System.currentTimeMillis() - request.requestStartTime
-                NetworkSherlock.getInstance().addRequest(request)
-                NetworkSherlock.getInstance().endRequest()
-
-                throw e
-            }
-        }
-
-        @JvmStatic
-        fun enqueue(call: Call, callback: Callback) {
-            NetworkSherlock.getInstance().startRequest()
-            call.enqueue(SherlockProxyCallback(callback, createNetworkRequest(call.request())))
-        }
-
         @JvmStatic
         fun appendResponseData(
             response: Response,
