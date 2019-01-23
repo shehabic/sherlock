@@ -20,7 +20,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        foodoraQuality {
+        sherlockPlugin {
             id = 'sherlock-plugin'
             implementationClass = 'com.shehabic.sherlock.plugin.SherlockPlugin'
         }
@@ -43,8 +43,8 @@ task javadocJar(type: Jar) {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId 'com.github.shehabic'
-            artifactId 'sherlock-plugin'
+            groupId GROUP
+            artifactId POM_ARTIFACT_ID
             version VERSION_NAME
             from components.java
         }

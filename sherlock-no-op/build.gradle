@@ -41,8 +41,8 @@ repositories {
 publishing {
     publications {
         bar(MavenPublication) {
-            groupId 'com.github.shehabic'
-            artifactId 'sherlock-no-op'
+            groupId GROUP
+            artifactId POM_ARTIFACT_ID
             version VERSION_NAME
             artifact(bundleReleaseAar)
         }
@@ -53,7 +53,7 @@ publishing {
         }
     }
 }
-apply plugin: 'com.github.dcendents.android-maven'
+//apply plugin: 'com.github.dcendents.android-maven'
 
 
 //apply from: rootProject.file('gradle/publish.gradle')
