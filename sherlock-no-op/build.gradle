@@ -39,7 +39,7 @@ publishing {
     publications {
         bar(MavenPublication) {
             groupId GROUP
-            artifactId 'sherlock-no-op'
+            artifactId POM_ARTIFACT_ID
             version VERSION_NAME
             artifact(bundleReleaseAar)
         }

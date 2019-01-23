@@ -44,7 +44,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId GROUP
-            artifactId 'sherlock-plugin'
+            artifactId POM_ARTIFACT_ID
             version VERSION_NAME
             from components.java
         }

@@ -55,7 +55,7 @@ publishing {
     publications {
         bar(MavenPublication) {
             groupId GROUP
-            artifactId 'sherlock'
+            artifactId POM_ARTIFACT_ID
             version VERSION_NAME
             artifact(bundleDebugAar)
         }
