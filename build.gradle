@@ -5,7 +5,7 @@ buildscript {
     ext.architecture_components_version = '1.1.1'
     ext.support_libraries_version = '27.1.1'
     ext.okhttp_version = '3.11.0'
-    ext.VERSION_NAME = "v1.0.7"
+    ext.VERSION_NAME = "1.0.8"
 
     repositories {
         google()
