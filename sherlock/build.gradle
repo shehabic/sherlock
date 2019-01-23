@@ -54,8 +54,8 @@ task sourceJar(type: Jar) {
 publishing {
     publications {
         bar(MavenPublication) {
-            groupId GROUP
-            artifactId POM_ARTIFACT_ID
+            groupId 'com.github.shehabic'
+            artifactId 'sherlock'
             version VERSION_NAME
             artifact(bundleDebugAar)
         }
@@ -66,4 +66,4 @@ publishing {
         }
     }
 }
-//apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.github.dcendents.android-maven'
