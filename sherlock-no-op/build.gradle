@@ -4,9 +4,6 @@ apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 28
-
-
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
@@ -41,7 +38,7 @@ repositories {
 publishing {
     publications {
         bar(MavenPublication) {
-            groupId 'com.github.shehabic'
+            groupId GROUP
             artifactId 'sherlock-no-op'
             version VERSION_NAME
             artifact(bundleReleaseAar)
@@ -53,7 +50,7 @@ publishing {
         }
     }
 }
-apply plugin: 'com.github.dcendents.android-maven'
+//apply plugin: 'com.github.dcendents.android-maven'
 
 
 //apply from: rootProject.file('gradle/publish.gradle')
