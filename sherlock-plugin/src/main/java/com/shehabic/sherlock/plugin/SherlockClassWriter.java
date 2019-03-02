@@ -62,7 +62,7 @@ class SherlockClassWriter {
             visitVarInsn(Opcodes.ALOAD, 0);
             // Takes instance of class "the/full/name/of/your/Class" from top of the stack and put value of field interceptors
             // "Ljava/util/List;" is just internal name of java.util.List
-            visitFieldInsn(Opcodes.GETFIELD, "okhttp3/OkHttpClient$Builder", "interceptors", "Ljava/util/List;");
+            visitFieldInsn(Opcodes.GETFIELD, "okhttp3/OkHttpClient$Builder", "networkInterceptors", "Ljava/util/List;");
             // Before we call add method of list we have to put target value on top of the stack
             visitTypeInsn(Opcodes.NEW, "com/shehabic/sherlock/interceptors/SherlockOkHttpInterceptor");
             visitInsn(Opcodes.DUP);
