@@ -1,0 +1,58 @@
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'maven-publish'
+apply plugin: 'com.gradle.plugin-publish'
+
+repositories {
+    google()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    ext.okhttp_version = '3.11.0'
+    implementation gradleApi()
+    implementation 'com.squareup:javapoet:1.11.1'
+    implementation 'com.github.javaparser:javaparser-core:3.9.1'
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'com.android.tools.build:gradle:3.3.0'
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+}
+
+gradlePlugin {
+    plugins {
+        sherlockPlugin {
+            id = 'sherlock-plugin'
+            implementationClass = 'com.shehabic.sherlock.plugin.SherlockPlugin'
+        }
+    }
+}
+
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+
+//apply from: rootProject.file('gradle/publish.gradle')
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'com.github.shehabic'
+            artifactId 'sherlock-plugin'
+            version VERSION_NAME
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "~/.m2/repository"
+        }
+    }
+}
+apply plugin: 'com.github.dcendents.android-maven'

@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.shehabic.sherlock.NetworkSherlock
-import com.shehabic.sherlock.interceptors.SherlockOkHttpInterceptor
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import okhttp3.MediaType
@@ -16,8 +15,6 @@ import okhttp3.RequestBody
 
 
 class MainActivity : AppCompatActivity() {
-
-    val endPoint = "https://api.github.com/users/shehabic"
 
     data class DynamicRequest(
         val url: String,
@@ -35,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {
             makeRequest()
         }
         setupUI()
@@ -77,7 +74,8 @@ class MainActivity : AppCompatActivity() {
     private fun networkCall(request: DynamicRequest) {
         val client: OkHttpClient = OkHttpClient
             .Builder()
-            .addInterceptor(SherlockOkHttpInterceptor())
+            // No need for this when using the plugin
+//            .addInterceptor(SherlockOkHttpInterceptor())
             .build()
         val body: RequestBody? = when(request.method) {
             "GET", "HEAD", "OPTION" -> null
