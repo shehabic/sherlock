@@ -6,6 +6,7 @@ Sherlock is a shorthand for "Network Sherlock Holmes" a simple lib that you can 
 ## How to use it?
 it's a very simple and straight forward for v.0.X only OKHttp is supported.
 1. Add the dependency to your gradle.
+
 ```groovy
 allprojects {
     repositories {
