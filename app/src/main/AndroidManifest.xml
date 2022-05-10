@@ -19,7 +19,8 @@
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
         <activity
             android:name="com.shehabic.testsherlock.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
