@@ -9,20 +9,26 @@
             android:label="@string/title_netrequest_list"
             android:theme="@style/SherlockAppTheme.NoActionBar"
             android:taskAffinity="com.shehabic.sherlock.${applicationId}"
-            >
+            android:exported="false">
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            
         </activity>
+        
         <activity
             android:name=".ui.NetRequestDetailActivity"
             android:label="@string/title_netrequest_detail"
             android:parentActivityName=".ui.NetRequestListActivity"
-            android:theme="@style/SherlockAppTheme.NoActionBar">
+            android:theme="@style/SherlockAppTheme.NoActionBar"
+            android:exported="false">
+            
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.shehabic.sherlock.ui.NetRequestListActivity" />
+            
         </activity>
     </application>
 
